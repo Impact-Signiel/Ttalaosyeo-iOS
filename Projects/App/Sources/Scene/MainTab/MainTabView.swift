@@ -8,7 +8,6 @@ struct MainTabView: View {
     var tabItem: [(Image, String, TabFlow)] = [
         (.init(.home), "홈", .home),
         (.init(.recommend), "추천", .recommend),
-        (.init(.user), "프로필", .mypage),
         (.init(.plus), "코스 생성", .plusCourse)
     ]
     // swiftlint: enable large_tuple
@@ -25,11 +24,6 @@ struct MainTabView: View {
                     .toNavigationView()
                     .eraseToAnyView()
                     .tag(TabFlow.recommend)
-
-                MyPageView()
-                    .toNavigationView()
-                    .eraseToAnyView()
-                    .tag(TabFlow.mypage)
 
                 PlusCourseView()
                     .toNavigationView()
