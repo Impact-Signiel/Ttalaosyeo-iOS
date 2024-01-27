@@ -1,11 +1,11 @@
 import SwiftUI
 
 @main
-struct ImpacthonApp: App {
+struct TtalaosyeoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainTabView()
         }
     }
 }
