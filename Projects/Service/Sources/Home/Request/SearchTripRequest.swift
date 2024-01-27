@@ -1,5 +1,15 @@
 import Foundation
 
+public struct SearchRequest: Codable {
+    public let page: Int
+    public let filter: SearchTripRequest
+
+    public init(page: Int, filter: SearchTripRequest){
+        self.page = page
+        self.filter = filter
+    }
+}
+
 public struct SearchTripRequest: Codable {
     public let keyword: String?
     public let authorId, minDays, maxDays, minPrice, maxPrice: Int?

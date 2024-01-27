@@ -10,35 +10,45 @@ public struct HomeResponse: Codable {
 public struct HomeDataResponse: Codable {
     let banners: [HomeBannerResponse]
     let sections: [HomeSectionResponse]
+    let cards: [HomeCardsResponse]
 }
 
 // MARK: - Banner
-public struct HomeBannerResponse: Codable {
-    let title, description, image, query: String
+public struct HomeBannerResponse: Codable, Equatable {
+    public let title, description, query: String
+    public let image: URL
 }
 
 // MARK: - Section
 public struct HomeSectionResponse: Codable {
-    let label, image, query: String
-    let trips: [HomeTripResponse]
+    public let label, image, query: String
+    public let trips: [HomeTripResponse]
 }
 
 // MARK: - Trip
-public struct HomeTripResponse: Codable {
-    let id, authorID: Int
-    let author, title: String
-    let price, nights, days: Int
-    let dayNights: String
-    let tags: [HomeTagsResponse]
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case authorID = "authorId"
-        case author, title, price, nights, days, dayNights, tags
-    }
+public struct HomeTripResponse: Codable, Equatable {
+    public let id: Int
+    public let author: HomeAuthorResponse
+    public let title: String
+    public let price, nights, days: Int
+    public let dayNights: String
+    public let tags: [HomeTagsResponse]
+    public let thumbnail: URL
 }
 
 // MARK: - Tags
-public struct HomeTagsResponse: Codable {
-    let key, value: String
+public struct HomeTagsResponse: Codable, Equatable {
+    public let key, value: String
+}
+
+public struct HomeAuthorResponse: Codable, Equatable {
+    let id: Int
+    let nickname: String
+}
+
+public struct HomeCardsResponse: Codable {
+    public let title: String
+    public let image: URL
+    public let query: String
+    public let categories: [String]
 }

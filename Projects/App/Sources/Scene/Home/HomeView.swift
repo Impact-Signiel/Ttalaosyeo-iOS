@@ -1,37 +1,54 @@
 import SwiftUI
+import Service
+import Kingfisher
 
 struct HomeView: View {
-    @State var input: String = ""
+    @State var isSearching: Bool = false
+    @StateObject var viewModel = HomeViewModel()
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack {
-                SearchBar()
-                Spacer()
-                    .frame(height:24)
-                HomeBanner()
-                Spacer()
-                    .frame(height: 28)
-                LocalSelect()
-                Spacer()
-                    .frame(height: 24)
-                Spa()
-                Spacer()
-                    .frame(height:23)
-                Course()
-                Spacer()
-                    .frame(height:24)
-                Flower()
-                Spacer()
-                    .frame(height:24)
-                Hanok()
+            VStack(spacing: 24) {
+                SearchBar(input: $viewModel.searchText)
+                    .onChange(of: viewModel.searchText) { _ in
+                        if viewModel.searchText.isEmpty {
+                            isSearching = false
+                        } else {
+                            isSearching = true
+                            self.viewModel.searchTrip()
+                        }
+                    }
+                if isSearching {
+                    
+                } else {
+                    HomeBanner(
+                        bannerList: viewModel.bannerList
+                    )
+                    LocalSelect()
+                    ForEach(viewModel.sectionList, id: \.label) {
+                        Course(
+                            title: $0.label, trips: $0.trips
+                        )
+                    }
+                    ForEach(viewModel.cardList, id: \.title) {
+                        Card(
+                            imageUrl: $0.image,
+                            tags: $0.categories,
+                            title: $0.title
+                        )
+                    }
+                }
             }
+            .padding(.bottom, 60)
         }
         .padding(.horizontal, 20)
+        .onAppear {
+            viewModel.fetchLanding()
+        }
     }
 }
 
 struct SearchBar: View {
-    @State var input: String = ""
+    @Binding var input: String
     var body: some View {
         HStack(alignment: .center, spacing: 0){
             Image(systemName: "magnifyingglass")
@@ -49,27 +66,36 @@ struct SearchBar: View {
 }
 
 struct HomeBanner: View {
+    var bannerList: [HomeBannerResponse]
+
+    init(bannerList: [HomeBannerResponse]) {
+        self.bannerList = bannerList
+    }
+
     var body: some View {
         @State var num: Int = 0
         VStack(alignment: .leading) {
             ZStack {
                 VStack(alignment: .leading) {
-                    Image("HomeBanner")
-                        .resizable()
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(bannerList, id: \.title) {
+                                KFImage($0.image)
+                                    .resizable()
+                                    .frame(width: 356, height: 156)
+                                    .aspectRatio(contentMode: .fill)
+                                    .cornerRadius(8, corners: .allCorners)
+                            }
+                        }
+                    }
                     Spacer()
                         .frame(height: 12)
-                    // 사진 위 버튼
-                    //            Button {
-                    //                num += 1
-                    //            } label: {
-                    //
-                    //            }
-                    Text("따라오셔 선정 탑 5 여행지")
+                    Text(bannerList.first?.title ?? "")
                         .TtalaosyeoFont(.title, color: .Black.black800)
                     Spacer()
                         .frame(height:4)
                     // semibold
-                    Text("항공, 투어, 숙소가 포함된 여행을 경험해보세요")
+                    Text(bannerList.first?.description ?? "")
                         .TtalaosyeoFont(.textSmall, color: .Black.black800)
                     // light
                 }
@@ -103,66 +129,70 @@ struct LocalSelect: View {
     }
 }
 
-struct Spa: View {
+struct Card: View {
+    var imageUrl: URL
+    var tags: [String]
+    var title: String
+
+    init(imageUrl: URL, tags: [String], title: String) {
+        self.imageUrl = imageUrl
+        self.tags = tags
+        self.title = title
+    }
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Image("Spa")
+        ZStack(alignment: .bottomLeading) {
+            KFImage(imageUrl)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .clipped()
-            VStack(alignment: .trailing) {
-                Image("plus")
-                    .padding(8)
-                    .background(Color.Black.black800)
-                    .cornerRadius(999)
+                .cornerRadius(8, corners: .allCorners)
+            VStack(alignment: .leading) {
                 Spacer()
-                VStack(alignment: .leading) {
+                ScrollView(.horizontal) {
                     HStack {
-                        Text("겨울")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                        Text("온천")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
+                        ForEach(tags, id: \.self) {
+                            Text($0)
+                                .TtalaosyeoFont(.textSmall, color: .Black.black100)
+                                .frame(width:56, height:32)
+                                .background(Color.Primary.Primary900)
+                                .cornerRadius(999)
+                        }
                     }
-                    Spacer()
-                        .frame(height:8)
-                    Text("뼈 시리도록 추운 겨울에 따뜻한 온천은 어때요?")
-                        .TtalaosyeoFont(.title, color: .Black.black100)
                 }
-                .padding(.bottom, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                    .frame(height:8)
+                Text(title)
+                    .TtalaosyeoFont(.title, color: .Black.black100)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 20)
+            .padding(.bottom, 30)
         }
     }
 }
 
 struct Course: View {
+    var title: String
+    var trips: [HomeTripResponse]
+
+    init(title: String, trips: [HomeTripResponse]) {
+        self.title = title
+        self.trips = trips
+    }
+
     let nums = [GridItem(.flexible(), spacing: 15),
                 GridItem(.flexible(), spacing: 15)]
-    let course: [(Image, String)] = [
-        (.init("course"), "[역대급 특가] 불교의 뿌리를 찾아서, 3박 4일"),
-        (.init("course_animal"), "귀여운 동물들과 함계 1박 2일을! 강원도 양양 투어"),
-        (.init("course_busan"), "[부산 시그니엘]부산하면 떠오르는 건 바로 바다! 바다와 함께"),
-        (.init("course_flower"), "눈 녹으면 열리는 분홍빛의 축제 벚꽃 성지 창원에서 꽃놀이 어떠세요?")
-    ]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("한정기간 할인하는 코스")
+            Text(title)
                 .TtalaosyeoFont(.titleSmall)
             LazyVGrid(columns: nums, alignment: .center, spacing: 15) {
-                ForEach(course, id: \.1) { a in
+                ForEach(trips, id: \.title) { data in
                     VStack(alignment: .leading) {
-                        a.0
+                        KFImage(data.thumbnail)
                             .resizable()
-                        Text(a.1)
+                            .frame(height: 128)
+                            .cornerRadius(8, corners: .allCorners)
+                        Text(data.title)
                             .TtalaosyeoFont(.textSmall, color: .Black.black800)
                         Spacer()
                     }
@@ -172,92 +202,4 @@ struct Course: View {
     }
 }
 
-struct Flower: View {
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Image("flower")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipped()
-            VStack(alignment: .trailing) {
-                Image("plus")
-                    .padding(8)
-                    .background(Color.Black.black800)
-                    .cornerRadius(999)
-                Spacer()
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("봄")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                        Text("개화")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                    }
-                    Spacer()
-                        .frame(height:8)
-                    Text("차디찬 겨울 바람을 이겨낸 꽃들의 향연을 만나보세요")
-                        .TtalaosyeoFont(.title, color: .Black.black100)
-                }
-                .padding(.bottom, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 20)
-        }
-    }
-}
 
-struct Hanok: View {
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Image("Hanok")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipped()
-            VStack(alignment: .trailing) {
-                Image("plus")
-                    .padding(8)
-                    .background(Color.Black.black800)
-                    .cornerRadius(999)
-                Spacer()
-                
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("사계절")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                        Text("한옥")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                        Text("궁궐")
-                            .TtalaosyeoFont(.textSmall, color: .Black.black100)
-                            .frame(width:56, height:32)
-                            .background(Color.Primary.Primary900)
-                            .cornerRadius(999)
-                    }
-                    Spacer()
-                        .frame(height:8)
-                    Text("우리들의 근본을 찾아가는 여행")
-                        .TtalaosyeoFont(.title, color: .Black.black100)
-                }
-                .padding(.bottom, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 20)
-        }
-    }
-}
-
-#Preview {
-    MainTabView()
-}

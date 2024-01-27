@@ -4,8 +4,10 @@ import RxSwift
 final class HomeViewModel: ObservableObject {
     private let homeService = HomeService()
     private let disposeBag = DisposeBag()
+    @Published var searchText: String = ""
     @Published var bannerList: [HomeBannerResponse] = []
     @Published var sectionList: [HomeSectionResponse] = []
+    @Published var cardList: [HomeCardsResponse] = []
     @Published var searchList: [SearchTripTripsResponse] = []
 
     func fetchLanding() {
@@ -14,27 +16,29 @@ final class HomeViewModel: ObservableObject {
             .subscribe(onNext: { [weak self] in
                 self?.bannerList = $0.0
                 self?.sectionList = $0.1
+                self?.cardList = $0.2
             }).disposed(by: disposeBag)
     }
     
     func searchTrip() {
         homeService.searchTrip(
-            request: .init(
-                keyword: "",
-                authorId: 0,
-                minDays: 0,
-                maxDays: 0,
-                minPrice: 0,
-                maxPrice: 0,
-                tags: .init(
-                    key: "",
-                    value: ""
+            request:
+                .init(
+                    page: 1,
+                    filter: .init(
+                        keyword: searchText,
+                        authorId: nil,
+                        minDays: nil,
+                        maxDays: nil,
+                        minPrice: nil,
+                        maxPrice: nil,
+                        tags: nil
+                    )
                 )
-            )
         )
         .asObservable()
         .subscribe(onNext: { [weak self] in
-            self?.searchList = $0.0!.trips
+            self?.searchList = $0.0?.trips ?? []
         }).disposed(by: disposeBag)
     }
 }

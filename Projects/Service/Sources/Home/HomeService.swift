@@ -3,19 +3,25 @@ import RxMoya
 import Moya
 
 public final class HomeService: BaseService<HomeAPI> {
-    public func landing() -> Single<([HomeBannerResponse], [HomeSectionResponse], ResponseStatusCode)> {
+    public func landing() -> Single<(
+        [HomeBannerResponse],
+        [HomeSectionResponse],
+        [HomeCardsResponse],
+        ResponseStatusCode
+    )> {
         return provider.rx.request(.landing)
             .filterSuccessfulStatusCodes()
             .map(HomeResponse.self)
-            .map { return ($0.data.banners, $0.data.sections, .getSuccess) }
+            .map { $0.data }
+            .map { return ($0.banners, $0.sections, $0.cards, .getSuccess) }
             .catch { error in
                 print(error)
-                return .just(([],[], .getSuccess))
+                return .just(([], [], [], .getSuccess))
             }
     }
 
-    public func searchTrip(request: SearchTripRequest) -> Single<(SearchTripDataResponse?, ResponseStatusCode)> {
-        return provider.rx.request(.landing)
+    public func searchTrip(request: SearchRequest) -> Single<(SearchTripDataResponse?, ResponseStatusCode)> {
+        return provider.rx.request(.searchTrip(request: request))
             .filterSuccessfulStatusCodes()
             .map(SearchTripResponse.self)
             .map { return ($0.data, .getSuccess) }
