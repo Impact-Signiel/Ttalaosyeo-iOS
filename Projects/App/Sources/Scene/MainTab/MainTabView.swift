@@ -76,7 +76,7 @@ struct MainTabView: View {
         Button {
             selection = tag
         } label: {
-            VStack(spacing: 1) {
+            VStack(spacing: 4) {
                 image
                     .renderingMode(.template)
                     .foregroundColor(
