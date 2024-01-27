@@ -6,10 +6,10 @@ struct MainTabView: View {
 
     // swiftlint: disable large_tuple
     var tabItem: [(Image, String, TabFlow)] = [
-        (.init(uiImage: .add), "홈", .home),
-        (.init(uiImage: .add), "북마크", .recommend),
-        (.init(uiImage: .add), "마이페이지", .mypage),
-        (.init(uiImage: .add), "메뉴", .plusCourse)
+        (.init(.home), "홈", .home),
+        (.init(.recommend), "추천", .recommend),
+        (.init(.user), "프로필", .mypage),
+        (.init(.plus), "코스 생성", .plusCourse)
     ]
     // swiftlint: enable large_tuple
 
@@ -44,9 +44,7 @@ struct MainTabView: View {
 
                     tabbarView()
                         .background {
-                            Color.black
-                                .opacity(0.1)
-                                .cornerRadius(10, corners: [.topLeft, .topRight])
+                            Color.white
                                 .ignoresSafeArea()
                         }
                         .environment(\.selectionTabbKey, $selection)
@@ -81,9 +79,18 @@ struct MainTabView: View {
             VStack(spacing: 1) {
                 image
                     .renderingMode(.template)
-                    .foregroundColor(.black)
+                    .foregroundColor(
+                        tag == selection
+                        ? .Primary.Primary900
+                        : .Black.black400
+                    )
                 Text(title)
-                    .foregroundStyle(.black)
+                    .TtalaosyeoFont(.caption)
+                    .foregroundColor(
+                        tag == selection
+                        ? .Primary.Primary900
+                        : .Black.black400
+                    )
             }
             .padding(.vertical, 18)
         }
