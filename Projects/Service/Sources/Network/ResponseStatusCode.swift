@@ -1,6 +1,6 @@
 import Foundation
 
-enum ResponseStatusCode: Int {
+public enum ResponseStatusCode: Int {
     case getSuccess = 200
     case deleteSuccess = 204
     case postSuccess = 201

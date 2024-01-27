@@ -4,10 +4,11 @@ import RxCocoa
 import Moya
 import RxMoya
 
-class BaseService<API: TargetType> {
-    let provider = MoyaProvider<API>(plugins: [MoyaLoggingPlugin()])
+public class BaseService<API: TargetType> {
+    public let provider = MoyaProvider<API>(plugins: [MoyaLoggingPlugin()])
+    public init() { }
 
-    func setNetworkError(_ error: Error) -> ResponseStatusCode {
+    public func setNetworkError(_ error: Error) -> ResponseStatusCode {
             print(error)
             print(error.localizedDescription)
             guard let status = (error as? MoyaError)?.response?.statusCode else { return (.fault) }
