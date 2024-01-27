@@ -37,6 +37,7 @@ struct MainTabView: View {
                     .tag(TabFlow.plusCourse)
             }
             .environment(\.tabbarHidden, $tabbarHidden)
+            
 
             if !tabbarHidden {
                 VStack {
