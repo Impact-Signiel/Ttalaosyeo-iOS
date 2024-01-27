@@ -3,6 +3,7 @@ import Moya
 
 public enum HomeAPI {
     case landing
+    case searchTrip(request: SearchTripRequest)
 }
 
 extension HomeAPI: TargetType {
@@ -15,6 +16,8 @@ extension HomeAPI: TargetType {
         switch self {
         case .landing:
             return "/landing"
+        case .searchTrip:
+            return "/search"
         }
     }
 
@@ -22,18 +25,26 @@ extension HomeAPI: TargetType {
         switch self {
         case .landing:
             return .get
+        case .searchTrip:
+            return .post
         }
     }
 
     public var task: Task {
-        return .requestPlain
+        switch self {
+        case let .searchTrip(request):
+            return .requestParameters(parameters:
+                                        [
+                                            "page": 1,
+                                            "filter": request
+                                        ], encoding: JSONEncoding.default)
+        default:
+            return.requestPlain
+        }
     }
 
     public var headers: [String: String]? {
-        switch self {
-        case .landing:
-            return [:]
-        }
+        return [:]
     }
 
 }
