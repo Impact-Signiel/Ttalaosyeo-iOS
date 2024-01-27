@@ -154,14 +154,18 @@ struct Course: View {
     ]
     
     var body: some View {
-        LazyVGrid(columns: nums, alignment: .center, spacing: 15) {
-            ForEach(course, id: \.1) { a in
-                VStack(alignment: .leading) {
-                    a.0
-                        .resizable()
-                    Text(a.1)
-                        .TtalaosyeoFont(.textSmall, color: .Black.black800)
-                    Spacer()
+        VStack(alignment: .leading, spacing: 16) {
+            Text("한정기간 할인하는 코스")
+                .TtalaosyeoFont(.titleSmall)
+            LazyVGrid(columns: nums, alignment: .center, spacing: 15) {
+                ForEach(course, id: \.1) { a in
+                    VStack(alignment: .leading) {
+                        a.0
+                            .resizable()
+                        Text(a.1)
+                            .TtalaosyeoFont(.textSmall, color: .Black.black800)
+                        Spacer()
+                    }
                 }
             }
         }
