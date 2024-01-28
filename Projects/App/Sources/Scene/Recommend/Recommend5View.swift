@@ -1,7 +1,13 @@
 import SwiftUI
+import Kingfisher
 
 struct Recommend5View: View {
+    @StateObject var viewModel: RecommendViewModel
     @State var isNavigation = false
+    @State var id = 0
+    
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("추천드릴 투어는 아래와 같아요")
@@ -10,34 +16,24 @@ struct Recommend5View: View {
                 .padding(.leading, 18)
                 .padding(.bottom, 40)
             
-            
             ScrollView{
-                ForEach(1...3, id: \.self) { _ in
+                ForEach(viewModel.recommendList, id: \.id) { data in
                     VStack(alignment: .leading, spacing: 8) {
-                        ZStack(alignment: .topTrailing) {
-                            TtalaosyeoAsset.Images.photo1svg
-                                .swiftUIImage
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                            
-                            TtalaosyeoAsset.Images.plusButton
-                                .swiftUIImage
-                                .resizable()
-                                .frame(width: 32, height: 32)
-                                .padding([.top, .trailing], 16)
-                            
-                        }
-                        Text("한국의 괌 제주도로 떠나는 역대급 경치 투어")
+                        KFImage(data.thumbnail)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .cornerRadius(8, corners: .allCorners)
+                        Text(data.title)
                             .TtalaosyeoFont(.titleSmall)
                         
-                        Text("제주도에서 태어나 결혼까지한 제주도 토박이의 숨겨진 경치 명소들을 알려드립니다!")
+                        Text(data.dayNights)
                             .TtalaosyeoFont(.text)
                             .foregroundColor(.Black.black400)
                             .lineLimit(2)
                         ScrollView(.horizontal) {
                             HStack(spacing: 4) {
-                                ForEach(1...3, id: \.self) { _ in
-                                    Text("1시")
+                                ForEach(data.tags, id: \.key) {
+                                    Text($0.value)
                                         .TtalaosyeoFont(.textSmall, color: .Black.black100)
                                         .padding(.horizontal,16)
                                         .padding(.vertical, 4)
@@ -49,6 +45,7 @@ struct Recommend5View: View {
                         }
                     }
                     .onTapGesture {
+                        id = data.id
                         isNavigation.toggle()
                     }
                     .padding(.horizontal, 20)
@@ -56,16 +53,13 @@ struct Recommend5View: View {
                 }
             }
         }
-        .navigate(to: Recommend6View(), when: $isNavigation)
+        .onAppear {
+            viewModel.postRecommend()
+        }
+        .navigate(to: TripDetailView(id: id), when: $isNavigation)
         .navigationBarBackButtonHidden()
     }
     
     
 }
 
-
-
-
-#Preview {
-    Recommend5View()
-}

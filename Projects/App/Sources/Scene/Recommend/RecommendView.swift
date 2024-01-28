@@ -43,7 +43,9 @@ struct RecommendView: View {
                 Spacer()
             }
         }
-        .navigate(to: Recommend2View(), when: $isNavigation)
+        .sheet(isPresented: $isNavigation) {
+            Recommend2View(viewModel: RecommendViewModel(queryList: []))
+        }
     }
 }
 

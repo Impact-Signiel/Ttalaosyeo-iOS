@@ -36,7 +36,7 @@ extension RecommendAPI: TargetType {
             return .requestParameters(parameters:
                                         [
                                             "queries": resultList
-                                        ], encoding: URLEncoding.queryString)
+                                        ], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }

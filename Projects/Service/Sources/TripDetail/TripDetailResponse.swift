@@ -21,12 +21,33 @@ public struct TripDetailDataResponse: Codable {
     public let tags: [TripDetailTagResponse]
     public let thumbnail: String
     public let schedules: [TripDetailScheduleResponse]
+
+    public init(id: Int, author: TripDetailAuthorResponse, title: String, content: String, location: String, personnel: Int, price: Int, nights: Int, days: Int, dayNights: String, createdAt: String, tags: [TripDetailTagResponse], thumbnail: String, schedules: [TripDetailScheduleResponse]) {
+        self.id = id
+        self.author = author
+        self.title = title
+        self.content = content
+        self.location = location
+        self.personnel = personnel
+        self.price = price
+        self.nights = nights
+        self.days = days
+        self.dayNights = dayNights
+        self.createdAt = createdAt
+        self.tags = tags
+        self.thumbnail = thumbnail
+        self.schedules = schedules
+    }
 }
 
 // MARK: - Author
 public struct TripDetailAuthorResponse: Codable {
     public let id: Int
     public let nickname: String
+    public init(id: Int, nickname: String) {
+        self.id = id
+        self.nickname = nickname
+    }
 }
 
 // MARK: - Schedule

@@ -18,7 +18,7 @@ struct HomeView: View {
                         }
                     }
                 if isSearching {
-                    
+                    SearchListView(tripsList: viewModel.searchList)
                 } else {
                     HomeBanner(
                         bannerList: viewModel.bannerList

@@ -15,7 +15,7 @@ public struct FetchRecommendDataResponse: Codable {
 }
 
 // MARK: - Item
-public struct FetchRecommendItemResponse: Codable {
+public struct FetchRecommendItemResponse: Codable, Equatable {
     public let text: String
     public  let image: String?
     public let next: Int?
@@ -33,21 +33,27 @@ public struct PostRecommendDataResponse: Codable {
 }
 
 // MARK: - Trip
-public struct PostRecommendTripResponse: Codable {
-    public let id, authorID: Int
-    public let author, title: String
+public struct PostRecommendTripResponse: Codable, Equatable {
+    public let id: Int
+    public let author: PostRecommendTriAuthorResponse
+    public let title: String
     public let price, nights, days: Int
     public let dayNights: String
     public let tags: [PostRecommendTagsResponse]
+    public let thumbnail: URL
 
     enum CodingKeys: String, CodingKey {
         case id
-        case authorID = "authorId"
-        case author, title, price, nights, days, dayNights, tags
+        case author, title, price, nights, days, dayNights, tags, thumbnail
     }
 }
+public struct PostRecommendTriAuthorResponse: Codable, Equatable {
+    public let id: Int
+    public let nickname: String
+}
+
 
 // MARK: - Tag
-public struct PostRecommendTagsResponse: Codable {
-    let key, value: String
+public struct PostRecommendTagsResponse: Codable, Equatable {
+    public let key, value: String
 }
